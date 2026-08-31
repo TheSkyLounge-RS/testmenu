@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Dashboard | The Sky Lounge Café</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<style>
+
+:root {
+    --cream: #f9f5ec;
+    --teal: #1c2a4a;
+    --dark-teal: #0f1830;
+    --gold: #b8874a;
+    --new: #b8874a;
+    --preparing: #2f6f9e;
+    --ready: #2f8f5e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: var(--dark-teal);
+    color: var(--cream);
+    min-height: 100vh;
+}
+
+h1, h2, h3 {
+    font-family: 'Cormorant Garamond', serif;
+    margin: 0;
+}
+
+/* LOGIN SCREEN */
+#loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+#loginBox {
+    background: var(--teal);
+    padding: 40px 32px;
+    border-radius: 18px;
+    width: min(360px, 100%);
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+
+#loginBox h1 {
+    font-size: 28px;
+    color: var(--gold);
+    margin-bottom: 6px;
+}
+
+#loginBox p {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 24px;
+}
+
+#loginBox input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(249,245,236,0.25);
+    background: rgba(249,245,236,0.06);
+    color: var(--cream);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+#loginBox button {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: none;
+    background: var(--gold);
+    color: var(--dark-teal);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+#loginError {
+    color: #e77;
+    font-size: 12px;
+    margin-top: 10px;
+    min-height: 16px;
+}
+
+/* DASHBOARD */
+#dashboard {
+    display: none;
+    padding: 24px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+header.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+header.top h1 {
+    font-size: 30px;
+    color: var(--gold);
+}
+
+#logoutBtn {
+    background: transparent;
+    border: 1px solid rgba(249,245,236,0.3);
+    color: var(--cream);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: 1px solid rgba(249,245,236,0.3);
+    color: var(--cream);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    opacity: 0.6;
+}
+
+.tab-btn.active {
+    background: var(--gold);
+    color: var(--dark-teal);
+    border-color: var(--gold);
+    opacity: 1;
+    font-weight: 700;
+}
+
+.history-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.history-controls label {
+    font-size: 13px;
+    opacity: 0.75;
+}
+
+.history-controls input[type="date"] {
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(249,245,236,0.25);
+    background: rgba(249,245,236,0.06);
+    color: var(--cream);
+    font-family: inherit;
+    font-size: 13px;
+}
+
+.history-controls button {
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: none;
+    background: var(--gold);
+    color: var(--dark-teal);
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+#exportCsvBtn {
+    background: var(--ready);
+    color: white;
+}
+
+.summary-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 700px) {
+    .summary-row { grid-template-columns: 1fr; }
+}
+
+.summary-card {
+    background: var(--teal);
+    border-radius: 12px;
+    padding: 16px 18px;
+    text-align: center;
+}
+
+.summary-label {
+    font-size: 12px;
+    opacity: 0.65;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-value {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--gold);
+    font-family: 'Cormorant Garamond', serif;
+}
+
+.history-row {
+    background: var(--teal);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.history-row .left {
+    font-size: 13px;
+}
+
+.history-row .left .time {
+    opacity: 0.6;
+    font-size: 11px;
+    margin-right: 10px;
+}
+
+.history-row .left .items {
+    opacity: 0.85;
+}
+
+.history-row .right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.status-pill {
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+}
+
+.status-pill.completed { background: var(--ready); color: white; }
+.status-pill.new { background: var(--new); color: white; }
+.status-pill.preparing { background: var(--preparing); color: white; }
+.status-pill.ready { background: var(--ready); color: white; }
+.status-pill.cancelled { background: #8a4444; color: white; }
+
+.history-row .amount {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+@media (max-width: 900px) {
+    .columns { grid-template-columns: 1fr; }
+}
+
+.column h2 {
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(249,245,236,0.15);
+}
+
+.order-card {
+    background: var(--teal);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    border-left: 4px solid var(--new);
+}
+
+.order-card.preparing { border-left-color: var(--preparing); }
+.order-card.ready { border-left-color: var(--ready); }
+
+.order-card .meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    opacity: 0.65;
+    margin-bottom: 8px;
+}
+
+.order-card .customer {
+    font-size: 13px;
+    color: var(--gold);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.order-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px;
+    font-size: 14px;
+}
+
+.order-card li {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+
+.order-card .total {
+    font-weight: 700;
+    text-align: right;
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+
+.order-card .actions {
+    display: flex;
+    gap: 8px;
+}
+
+.order-card button {
+    flex: 1;
+    padding: 9px;
+    border: none;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-advance {
+    background: var(--gold);
+    color: var(--dark-teal);
+}
+
+.btn-complete {
+    background: var(--ready);
+    color: white;
+}
+
+.empty-msg {
+    opacity: 0.5;
+    font-size: 13px;
+    padding: 12px 0;
+}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+    <div id="loginBox">
+        <h1>Staff Login</h1>
+        <p>The Sky Lounge Café — Order Dashboard</p>
+        <input type="email" id="loginEmail" placeholder="Staff email" />
+        <input type="password" id="loginPassword" placeholder="Password" />
+        <button id="loginBtn">LOG IN</button>
+        <div id="loginError"></div>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+    <header class="top">
+        <h1 id="pageTitle">🧾 Live Orders</h1>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button id="tabLive" class="tab-btn active">Live Orders</button>
+            <button id="tabHistory" class="tab-btn">Order History</button>
+            <button id="testSoundBtn" class="tab-btn">🔊 Test Sound</button>
+            <button id="logoutBtn">Log out</button>
+        </div>
+    </header>
+
+    <div id="liveView">
+    <div class="columns">
+        <div class="column">
+            <h2>🆕 New</h2>
+            <div id="col-new"></div>
+        </div>
+        <div class="column">
+            <h2>👨‍🍳 Preparing</h2>
+            <div id="col-preparing"></div>
+        </div>
+        <div class="column">
+            <h2>✅ Ready</h2>
+            <div id="col-ready"></div>
+        </div>
+    </div>
+    </div>
+
+    <div id="historyView" style="display:none;">
+
+        <div class="history-controls">
+            <label for="historyDate">Select date:</label>
+            <input type="date" id="historyDate" />
+            <button id="loadHistoryBtn">LOAD</button>
+            <button id="exportCsvBtn">EXPORT CSV</button>
+        </div>
+
+        <div class="summary-row">
+            <div class="summary-card">
+                <div class="summary-label">Total Orders</div>
+                <div class="summary-value" id="summaryCount">–</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Total Revenue</div>
+                <div class="summary-value" id="summaryRevenue">–</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">Cancelled / Failed</div>
+                <div class="summary-value" id="summaryCancelled">–</div>
+            </div>
+        </div>
+
+        <div id="historyList"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDDGta_Vtwzrp-IP3bZdNi0pOhLfhv77pA",
+    authDomain: "sky-lounge-order-id.firebaseapp.com",
+    projectId: "sky-lounge-order-id",
+    storageBucket: "sky-lounge-order-id.firebasestorage.app",
+    messagingSenderId: "267992026305",
+    appId: "1:267992026305:web:40c6e36a5c11bc5d71d840"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+const loginScreen = document.getElementById("loginScreen");
+const dashboard = document.getElementById("dashboard");
+const loginError = document.getElementById("loginError");
+
+let knownOrderIds = new Set();
+let firstLoad = true;
+let unsubscribe = null;
+
+let audioCtx = null;
+
+document.getElementById("loginBtn").addEventListener("click", function() {
+
+    // Create/unlock the audio context here, inside a real click —
+    // browsers require a user gesture before they'll allow sound,
+    // so we set this up now rather than waiting for the first order.
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+    }
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    loginError.textContent = "";
+
+    auth.signInWithEmailAndPassword(email, password)
+        .catch(function(err) {
+            loginError.textContent = "Login failed — check email/password.";
+        });
+
+});
+
+document.getElementById("logoutBtn").addEventListener("click", function() {
+    auth.signOut();
+});
+
+document.getElementById("testSoundBtn").addEventListener("click", function() {
+    playDing();
+});
+
+auth.onAuthStateChanged(function(user) {
+
+    if (user) {
+
+        loginScreen.style.display = "none";
+        dashboard.style.display = "block";
+        listenForOrders();
+
+    } else {
+
+        loginScreen.style.display = "flex";
+        dashboard.style.display = "none";
+
+        if (unsubscribe) unsubscribe();
+
+    }
+
+});
+
+
+function listenForOrders() {
+
+    unsubscribe = db.collection("orders")
+        .orderBy("createdAt", "asc")
+        .onSnapshot(function(snapshot) {
+
+            const colNew = document.getElementById("col-new");
+            const colPreparing = document.getElementById("col-preparing");
+            const colReady = document.getElementById("col-ready");
+
+            colNew.innerHTML = "";
+            colPreparing.innerHTML = "";
+            colReady.innerHTML = "";
+
+            let hasNew = false, hasPreparing = false, hasReady = false;
+            let currentIds = new Set();
+
+            snapshot.forEach(function(doc) {
+
+                const order = doc.data();
+                const id = doc.id;
+
+                // Skip orders that are already completed (or any other
+                // status we don't show columns for) — no card needed.
+                if (["new", "preparing", "ready"].indexOf(order.status) === -1) {
+                    return;
+                }
+
+                currentIds.add(id);
+
+                if (!firstLoad && order.status === "new" && !knownOrderIds.has(id)) {
+                    playDing();
+                }
+
+                const card = buildCard(id, order);
+
+                if (order.status === "new") {
+                    colNew.appendChild(card);
+                    hasNew = true;
+                } else if (order.status === "preparing") {
+                    colPreparing.appendChild(card);
+                    hasPreparing = true;
+                } else if (order.status === "ready") {
+                    colReady.appendChild(card);
+                    hasReady = true;
+                }
+
+            });
+
+            if (!hasNew) colNew.innerHTML = '<div class="empty-msg">No new orders</div>';
+            if (!hasPreparing) colPreparing.innerHTML = '<div class="empty-msg">Nothing in progress</div>';
+            if (!hasReady) colReady.innerHTML = '<div class="empty-msg">Nothing ready</div>';
+
+            knownOrderIds = currentIds;
+            firstLoad = false;
+
+        }, function(error) {
+            console.error("Order listener error:", error);
+        });
+
+}
+
+
+function buildCard(id, order) {
+
+    const card = document.createElement("div");
+    card.className = "order-card " + order.status;
+
+    const time = order.createdAt && order.createdAt.toDate
+        ? order.createdAt.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+        : "just now";
+
+    let itemsHtml = "";
+    order.items.forEach(function(item) {
+        itemsHtml += "<li><span>" + item.quantity + "× " + escapeHtml(item.name) + "</span><span>₹" + (item.price * item.quantity) + "</span></li>";
+    });
+
+    let actionsHtml = "";
+    if (order.status === "new") {
+        actionsHtml = '<button class="btn-advance" data-id="' + id + '" data-next="preparing">START PREPARING</button>';
+    } else if (order.status === "preparing") {
+        actionsHtml = '<button class="btn-advance" data-id="' + id + '" data-next="ready">MARK READY</button>';
+    } else if (order.status === "ready") {
+        actionsHtml = '<button class="btn-complete" data-id="' + id + '" data-next="completed">COMPLETE</button>';
+    }
+
+    card.innerHTML =
+        '<div class="meta"><span>' + time + '</span><span>#' + id.slice(-5).toUpperCase() + '</span></div>' +
+        (order.customerInfo ? '<div class="customer">' + escapeHtml(order.customerInfo) + '</div>' : '') +
+        '<ul>' + itemsHtml + '</ul>' +
+        '<div class="total">₹' + order.total + '</div>' +
+        '<div class="actions">' + actionsHtml + '</div>';
+
+    const actionButton = card.querySelector("button");
+
+    if (actionButton) {
+
+        actionButton.addEventListener("click", function() {
+            const next = this.getAttribute("data-next");
+            db.collection("orders").doc(id).update({ status: next });
+        });
+
+    }
+
+    return card;
+
+}
+
+
+function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+
+function playDing() {
+
+    if (!audioCtx) {
+        return;
+    }
+
+    if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+    }
+
+    const now = audioCtx.currentTime;
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.setValueAtTime(1175, now + 0.15);
+
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.35, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.6);
+
+}
+
+
+/* =====================================================
+   TABS: Live Orders <-> Order History
+===================================================== */
+
+const tabLive = document.getElementById("tabLive");
+const tabHistory = document.getElementById("tabHistory");
+const liveView = document.getElementById("liveView");
+const historyView = document.getElementById("historyView");
+const pageTitle = document.getElementById("pageTitle");
+
+tabLive.addEventListener("click", function() {
+    tabLive.classList.add("active");
+    tabHistory.classList.remove("active");
+    liveView.style.display = "block";
+    historyView.style.display = "none";
+    pageTitle.textContent = "🧾 Live Orders";
+});
+
+tabHistory.addEventListener("click", function() {
+    tabHistory.classList.add("active");
+    tabLive.classList.remove("active");
+    liveView.style.display = "none";
+    historyView.style.display = "block";
+    pageTitle.textContent = "📊 Order History";
+
+    if (!document.getElementById("historyDate").value) {
+        document.getElementById("historyDate").value = todayDateString();
+        loadHistory();
+    }
+});
+
+
+/* =====================================================
+   ORDER HISTORY
+===================================================== */
+
+let lastLoadedOrders = [];
+
+function todayDateString() {
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const dd = String(now.getDate()).padStart(2, "0");
+    return yyyy + "-" + mm + "-" + dd;
+}
+
+document.getElementById("loadHistoryBtn").addEventListener("click", loadHistory);
+document.getElementById("exportCsvBtn").addEventListener("click", exportCsv);
+
+
+function loadHistory() {
+
+    const dateStr = document.getElementById("historyDate").value;
+
+    if (!dateStr) {
+        alert("Please pick a date first.");
+        return;
+    }
+
+    const startOfDay = new Date(dateStr + "T00:00:00");
+    const endOfDay = new Date(dateStr + "T23:59:59.999");
+
+    const startTs = firebase.firestore.Timestamp.fromDate(startOfDay);
+    const endTs = firebase.firestore.Timestamp.fromDate(endOfDay);
+
+    const historyList = document.getElementById("historyList");
+    historyList.innerHTML = '<div class="empty-msg">Loading...</div>';
+
+    db.collection("orders")
+        .where("createdAt", ">=", startTs)
+        .where("createdAt", "<=", endTs)
+        .orderBy("createdAt", "desc")
+        .get()
+        .then(function(snapshot) {
+
+            const orders = [];
+
+            snapshot.forEach(function(doc) {
+                orders.push(Object.assign({ id: doc.id }, doc.data()));
+            });
+
+            lastLoadedOrders = orders;
+            renderHistory(orders);
+
+        })
+        .catch(function(error) {
+            console.error("History load error:", error);
+            historyList.innerHTML = '<div class="empty-msg">Failed to load orders. Check the console for details.</div>';
+        });
+
+}
+
+
+function renderHistory(orders) {
+
+    const historyList = document.getElementById("historyList");
+    historyList.innerHTML = "";
+
+    let totalRevenue = 0;
+    let validCount = 0;
+    let cancelledCount = 0;
+
+    orders.forEach(function(order) {
+
+        if (order.status === "cancelled" || order.status === "failed") {
+            cancelledCount++;
+        } else {
+            validCount++;
+            totalRevenue += (order.total || 0);
+        }
+
+        const time = order.createdAt && order.createdAt.toDate
+            ? order.createdAt.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            : "–";
+
+        const itemsSummary = (order.items || [])
+            .map(function(item) { return item.quantity + "× " + item.name; })
+            .join(", ");
+
+        const row = document.createElement("div");
+        row.className = "history-row";
+
+        row.innerHTML =
+            '<div class="left">' +
+                '<span class="time">' + time + '</span>' +
+                (order.customerInfo ? '<strong>' + escapeHtml(order.customerInfo) + '</strong> — ' : '') +
+                '<span class="items">' + escapeHtml(itemsSummary) + '</span>' +
+            '</div>' +
+            '<div class="right">' +
+                '<span class="status-pill ' + (order.status || "new") + '">' + (order.status || "new") + '</span>' +
+                '<span class="amount">₹' + (order.total || 0) + '</span>' +
+            '</div>';
+
+        historyList.appendChild(row);
+
+    });
+
+    if (orders.length === 0) {
+        historyList.innerHTML = '<div class="empty-msg">No orders on this date.</div>';
+    }
+
+    document.getElementById("summaryCount").textContent = validCount;
+    document.getElementById("summaryRevenue").textContent = "₹" + totalRevenue;
+    document.getElementById("summaryCancelled").textContent = cancelledCount;
+
+}
+
+
+function exportCsv() {
+
+    if (lastLoadedOrders.length === 0) {
+        alert("No orders loaded for this date yet.");
+        return;
+    }
+
+    const dateStr = document.getElementById("historyDate").value;
+
+    let csv = "Time,Customer/Table,Items,Total,Status\n";
+
+    lastLoadedOrders.forEach(function(order) {
+
+        const time = order.createdAt && order.createdAt.toDate
+            ? order.createdAt.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            : "";
+
+        const itemsSummary = (order.items || [])
+            .map(function(item) { return item.quantity + "x " + item.name; })
+            .join(" | ");
+
+        const row = [
+            time,
+            order.customerInfo || "",
+            itemsSummary,
+            order.total || 0,
+            order.status || ""
+        ].map(function(field) {
+            const str = String(field).replace(/"/g, '""');
+            return '"' + str + '"';
+        }).join(",");
+
+        csv += row + "\n";
+
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "orders-" + dateStr + ".csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+}
+
+</script>
+
+</body>
+</html>
