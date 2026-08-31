@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Dashboard | The Sky Lounge Café</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+<style>
+
+:root {
+    --cream: #f9f5ec;
+    --teal: #1c2a4a;
+    --dark-teal: #0f1830;
+    --gold: #b8874a;
+    --new: #b8874a;
+    --preparing: #2f6f9e;
+    --ready: #2f8f5e;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: var(--dark-teal);
+    color: var(--cream);
+    min-height: 100vh;
+}
+
+h1, h2, h3 {
+    font-family: 'Cormorant Garamond', serif;
+    margin: 0;
+}
+
+/* LOGIN SCREEN */
+#loginScreen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+#loginBox {
+    background: var(--teal);
+    padding: 40px 32px;
+    border-radius: 18px;
+    width: min(360px, 100%);
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+
+#loginBox h1 {
+    font-size: 28px;
+    color: var(--gold);
+    margin-bottom: 6px;
+}
+
+#loginBox p {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 24px;
+}
+
+#loginBox input {
+    width: 100%;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(249,245,236,0.25);
+    background: rgba(249,245,236,0.06);
+    color: var(--cream);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+#loginBox button {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: none;
+    background: var(--gold);
+    color: var(--dark-teal);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+#loginError {
+    color: #e77;
+    font-size: 12px;
+    margin-top: 10px;
+    min-height: 16px;
+}
+
+/* DASHBOARD */
+#dashboard {
+    display: none;
+    padding: 24px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+header.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+header.top h1 {
+    font-size: 30px;
+    color: var(--gold);
+}
+
+#logoutBtn {
+    background: transparent;
+    border: 1px solid rgba(249,245,236,0.3);
+    color: var(--cream);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+@media (max-width: 900px) {
+    .columns { grid-template-columns: 1fr; }
+}
+
+.column h2 {
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(249,245,236,0.15);
+}
+
+.order-card {
+    background: var(--teal);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    border-left: 4px solid var(--new);
+}
+
+.order-card.preparing { border-left-color: var(--preparing); }
+.order-card.ready { border-left-color: var(--ready); }
+
+.order-card .meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    opacity: 0.65;
+    margin-bottom: 8px;
+}
+
+.order-card .customer {
+    font-size: 13px;
+    color: var(--gold);
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.order-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 10px;
+    font-size: 14px;
+}
+
+.order-card li {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+
+.order-card .total {
+    font-weight: 700;
+    text-align: right;
+    margin-bottom: 12px;
+    font-size: 15px;
+}
+
+.order-card .actions {
+    display: flex;
+    gap: 8px;
+}
+
+.order-card button {
+    flex: 1;
+    padding: 9px;
+    border: none;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-advance {
+    background: var(--gold);
+    color: var(--dark-teal);
+}
+
+.btn-complete {
+    background: var(--ready);
+    color: white;
+}
+
+.empty-msg {
+    opacity: 0.5;
+    font-size: 13px;
+    padding: 12px 0;
+}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+    <div id="loginBox">
+        <h1>Staff Login</h1>
+        <p>The Sky Lounge Café — Order Dashboard</p>
+        <input type="email" id="loginEmail" placeholder="Staff email" />
+        <input type="password" id="loginPassword" placeholder="Password" />
+        <button id="loginBtn">LOG IN</button>
+        <div id="loginError"></div>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+    <header class="top">
+        <h1>🧾 Live Orders</h1>
+        <button id="logoutBtn">Log out</button>
+    </header>
+
+    <div class="columns">
+        <div class="column">
+            <h2>🆕 New</h2>
+            <div id="col-new"></div>
+        </div>
+        <div class="column">
+            <h2>👨‍🍳 Preparing</h2>
+            <div id="col-preparing"></div>
+        </div>
+        <div class="column">
+            <h2>✅ Ready</h2>
+            <div id="col-ready"></div>
+        </div>
+    </div>
+</div>
+
+<audio id="dingSound" preload="auto">
+    <source src="https://cdn.jsdelivr.net/gh/anars/blank-audio@master/250-milliseconds-of-silence.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDDGta_Vtwzrp-IP3bZdNi0pOhLfhv77pA",
+    authDomain: "sky-lounge-order-id.firebaseapp.com",
+    projectId: "sky-lounge-order-id",
+    storageBucket: "sky-lounge-order-id.firebasestorage.app",
+    messagingSenderId: "267992026305",
+    appId: "1:267992026305:web:40c6e36a5c11bc5d71d840"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+const loginScreen = document.getElementById("loginScreen");
+const dashboard = document.getElementById("dashboard");
+const loginError = document.getElementById("loginError");
+
+let knownOrderIds = new Set();
+let firstLoad = true;
+let unsubscribe = null;
+
+document.getElementById("loginBtn").addEventListener("click", function() {
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    loginError.textContent = "";
+
+    auth.signInWithEmailAndPassword(email, password)
+        .catch(function(err) {
+            loginError.textContent = "Login failed — check email/password.";
+        });
+
+});
+
+document.getElementById("logoutBtn").addEventListener("click", function() {
+    auth.signOut();
+});
+
+auth.onAuthStateChanged(function(user) {
+
+    if (user) {
+
+        loginScreen.style.display = "none";
+        dashboard.style.display = "block";
+        listenForOrders();
+
+    } else {
+
+        loginScreen.style.display = "flex";
+        dashboard.style.display = "none";
+
+        if (unsubscribe) unsubscribe();
+
+    }
+
+});
+
+
+function listenForOrders() {
+
+    unsubscribe = db.collection("orders")
+        .where("status", "in", ["new", "preparing", "ready"])
+        .orderBy("createdAt", "asc")
+        .onSnapshot(function(snapshot) {
+
+            const colNew = document.getElementById("col-new");
+            const colPreparing = document.getElementById("col-preparing");
+            const colReady = document.getElementById("col-ready");
+
+            colNew.innerHTML = "";
+            colPreparing.innerHTML = "";
+            colReady.innerHTML = "";
+
+            let hasNew = false, hasPreparing = false, hasReady = false;
+            let currentIds = new Set();
+
+            snapshot.forEach(function(doc) {
+
+                const order = doc.data();
+                const id = doc.id;
+                currentIds.add(id);
+
+                if (!firstLoad && order.status === "new" && !knownOrderIds.has(id)) {
+                    playDing();
+                }
+
+                const card = buildCard(id, order);
+
+                if (order.status === "new") {
+                    colNew.appendChild(card);
+                    hasNew = true;
+                } else if (order.status === "preparing") {
+                    colPreparing.appendChild(card);
+                    hasPreparing = true;
+                } else if (order.status === "ready") {
+                    colReady.appendChild(card);
+                    hasReady = true;
+                }
+
+            });
+
+            if (!hasNew) colNew.innerHTML = '<div class="empty-msg">No new orders</div>';
+            if (!hasPreparing) colPreparing.innerHTML = '<div class="empty-msg">Nothing in progress</div>';
+            if (!hasReady) colReady.innerHTML = '<div class="empty-msg">Nothing ready</div>';
+
+            knownOrderIds = currentIds;
+            firstLoad = false;
+
+        }, function(error) {
+            console.error("Order listener error:", error);
+        });
+
+}
+
+
+function buildCard(id, order) {
+
+    const card = document.createElement("div");
+    card.className = "order-card " + order.status;
+
+    const time = order.createdAt && order.createdAt.toDate
+        ? order.createdAt.toDate().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+        : "just now";
+
+    let itemsHtml = "";
+    order.items.forEach(function(item) {
+        itemsHtml += "<li><span>" + item.quantity + "× " + escapeHtml(item.name) + "</span><span>₹" + (item.price * item.quantity) + "</span></li>";
+    });
+
+    let actionsHtml = "";
+    if (order.status === "new") {
+        actionsHtml = '<button class="btn-advance" data-id="' + id + '" data-next="preparing">START PREPARING</button>';
+    } else if (order.status === "preparing") {
+        actionsHtml = '<button class="btn-advance" data-id="' + id + '" data-next="ready">MARK READY</button>';
+    } else if (order.status === "ready") {
+        actionsHtml = '<button class="btn-complete" data-id="' + id + '" data-next="completed">COMPLETE</button>';
+    }
+
+    card.innerHTML =
+        '<div class="meta"><span>' + time + '</span><span>#' + id.slice(-5).toUpperCase() + '</span></div>' +
+        (order.customerInfo ? '<div class="customer">' + escapeHtml(order.customerInfo) + '</div>' : '') +
+        '<ul>' + itemsHtml + '</ul>' +
+        '<div class="total">₹' + order.total + '</div>' +
+        '<div class="actions">' + actionsHtml + '</div>';
+
+    card.querySelector("button").addEventListener("click", function() {
+        const next = this.getAttribute("data-next");
+        db.collection("orders").doc(id).update({ status: next });
+    });
+
+    return card;
+
+}
+
+
+function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+
+function playDing() {
+    const audio = document.getElementById("dingSound");
+    audio.play().catch(function() {});
+}
+
+</script>
+
+</body>
+</html>
