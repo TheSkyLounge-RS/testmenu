@@ -358,6 +358,13 @@ function listenForOrders() {
 
                 const order = doc.data();
                 const id = doc.id;
+
+                // Skip orders that are already completed (or any other
+                // status we don't show columns for) — no card needed.
+                if (["new", "preparing", "ready"].indexOf(order.status) === -1) {
+                    return;
+                }
+
                 currentIds.add(id);
 
                 if (!firstLoad && order.status === "new" && !knownOrderIds.has(id)) {
@@ -423,10 +430,16 @@ function buildCard(id, order) {
         '<div class="total">₹' + order.total + '</div>' +
         '<div class="actions">' + actionsHtml + '</div>';
 
-    card.querySelector("button").addEventListener("click", function() {
-        const next = this.getAttribute("data-next");
-        db.collection("orders").doc(id).update({ status: next });
-    });
+    const actionButton = card.querySelector("button");
+
+    if (actionButton) {
+
+        actionButton.addEventListener("click", function() {
+            const next = this.getAttribute("data-next");
+            db.collection("orders").doc(id).update({ status: next });
+        });
+
+    }
 
     return card;
 
