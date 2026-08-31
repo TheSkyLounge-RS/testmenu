@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#241914">
+<meta name="description" content="The Sky Lounge Café — premium digital menu.">
+<title>The Sky Lounge  | Premium Menu</title>
+<!-- Real café photos and logo are stored in /assets -->
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#f5f1ea;
+  --paper:#fffdf9;
+  --ink:#1b1815;
+  --muted:#766f67;
+  --line:#e5ddd2;
+  --gold:#b88945;
+  --gold2:#d5ad72;
+  --dark:#241914;
+  --shadow:0 18px 50px rgba(28,22,16,.10);
+  --radius:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"DM Sans",sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.55;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+a{text-decoration:none;color:inherit}
+
+.hero{
+  min-height:92vh;
+  display:flex;
+  align-items:center;
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,rgba(31,20,14,.88),rgba(31,20,14,.55),rgba(31,20,14,.20)),
+    url("https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=2200&q=85") center/cover;
+  color:#fff;
+}
+
+.hero-logo{
+  width:clamp(95px,11vw,145px);
+  height:auto;
+  display:block;
+  margin-bottom:28px;
+  filter:drop-shadow(0 12px 25px rgba(37,24,17,.42));
+}
+.hero-brand{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:18px;
+}
+.hero-brand-line{
+  width:54px;height:1px;background:#d9ae6b;
+}
+.photo-showcase{
+  margin:0 0 90px;
+}
+.photo-grid{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:18px;
+}
+.photo-card{
+  position:relative;
+  min-height:430px;
+  border-radius:30px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  background:#2a1d16;
+}
+.photo-card.tall{min-height:560px}
+.photo-card img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .7s ease;
+}
+.photo-card:hover img{transform:scale(1.035)}
+.photo-caption{
+  position:absolute;left:22px;right:22px;bottom:22px;
+  padding:18px 20px;border-radius:18px;
+  background:rgba(37,24,17,.70);backdrop-filter:blur(12px);
+  color:#fff;border:1px solid rgba(255,255,255,.14);
+}
+.photo-caption small{
+  color:#e5bd7c;text-transform:uppercase;letter-spacing:.16em;font-weight:700;
+}
+.photo-caption h3{
+  font-family:"Cormorant Garamond",serif;font-size:2rem;line-height:1.05;margin-top:3px;
+}
+.about-photo{
+  margin-top:28px;border-radius:22px;overflow:hidden;height:260px;
+}
+.about-photo img{width:100%;height:100%;object-fit:cover}
+@media(max-width:900px){
+  .photo-grid{grid-template-columns:1fr 1fr}
+  .photo-card,.photo-card.tall{min-height:360px}
+}
+@media(max-width:600px){
+  .hero-logo{width:105px;margin-bottom:20px}
+  .photo-grid{grid-template-columns:1fr}
+  .photo-card,.photo-card.tall{min-height:300px}
+}
+
+.hero:after{
+  content:"";
+  position:absolute;inset:auto 0 0;height:180px;
+  background:linear-gradient(transparent,var(--bg));
+}
+.hero-content{width:min(1180px,92%);margin:auto;position:relative;z-index:2;padding:80px 0}
+.kicker{
+  text-transform:uppercase;letter-spacing:.28em;font-size:.78rem;
+  color:#e6c58e;margin-bottom:16px;font-weight:700
+}
+.hero h1{
+  font-family:"Cormorant Garamond",serif;font-size:clamp(4rem,9vw,8rem);
+  line-height:.82;max-width:800px;font-weight:600
+}
+.hero h1 span{display:block;color:#e4bf83}
+.hero p{max-width:560px;color:#eee7dd;margin:28px 0;font-size:1.05rem}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{
+  border:1px solid rgba(255,255,255,.25);padding:14px 20px;border-radius:999px;
+  transition:.25s;background:rgba(255,255,255,.08);color:#fff;backdrop-filter:blur(10px)
+}
+.btn.primary{background:#fff;color:#161310;border-color:#fff;font-weight:700}
+.btn:hover{transform:translateY(-2px)}
+
+.info-strip{
+  width:min(1180px,92%);margin:-42px auto 70px;position:relative;z-index:4;
+  background:var(--paper);box-shadow:var(--shadow);border-radius:18px;
+  display:grid;grid-template-columns:repeat(3,1fr);overflow:hidden
+}
+.info{padding:25px;border-right:1px solid var(--line);text-align:center}
+.info:last-child{border:0}.info strong{display:block;font-size:.82rem;text-transform:uppercase;letter-spacing:.12em}
+.info span{color:var(--muted);font-size:.9rem}
+
+.container{width:min(1180px,92%);margin:auto}
+.section-head{text-align:center;margin-bottom:34px}
+.eyebrow{text-transform:uppercase;letter-spacing:.22em;color:var(--gold);font-weight:700;font-size:.72rem}
+.section-head h2{
+  font-family:"Cormorant Garamond",serif;font-size:clamp(2.7rem,5vw,4.2rem);line-height:1;margin:8px 0
+}
+.section-head p{color:var(--muted)}
+
+.featured{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:90px
+}
+.feature-card{
+  min-height:245px;border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;justify-content:end;
+  color:#fff;position:relative;overflow:hidden;background-size:cover;background-position:center;
+  box-shadow:0 12px 35px rgba(0,0,0,.12)
+}
+.feature-card:before{content:"";position:absolute;inset:0;background:linear-gradient(transparent 25%,rgba(0,0,0,.82))}
+.feature-card>*{position:relative;z-index:1}
+.feature-card small{color:#e7c58d;text-transform:uppercase;letter-spacing:.14em}
+.feature-card h3{font-family:"Cormorant Garamond",serif;font-size:1.8rem}
+.feature-card button{
+  align-self:flex-start;margin-top:10px;border:0;border-radius:999px;padding:8px 13px;background:#fff;color:#171310;font-weight:700
+}
+
+.menu-section{padding-bottom:100px}
+.controls{
+  position:sticky;top:10px;z-index:10;background:rgba(245,241,234,.86);backdrop-filter:blur(16px);
+  padding:12px 0;margin-bottom:24px
+}
+.search{
+  display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);
+  border-radius:999px;padding:5px 16px;box-shadow:0 8px 25px rgba(30,20,10,.06)
+}
+.search input{width:100%;border:0;outline:0;background:transparent;padding:11px 4px;color:var(--ink)}
+.categories{
+  display:flex;gap:9px;overflow:auto;padding:12px 2px 4px;scrollbar-width:none
+}
+.categories::-webkit-scrollbar{display:none}
+.cat{
+  white-space:nowrap;border:1px solid var(--line);background:var(--paper);color:var(--muted);
+  padding:9px 15px;border-radius:999px;font-size:.82rem;font-weight:700;transition:.2s
+}
+.cat.active,.cat:hover{background:var(--dark);color:#fff;border-color:var(--dark)}
+
+.menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.category-block{
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;box-shadow:0 7px 25px rgba(25,18,10,.045)
+}
+.category-title{display:flex;align-items:center;gap:11px;margin-bottom:15px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.category-title .icon{font-size:1.5rem}.category-title h3{font-family:"Cormorant Garamond",serif;font-size:1.8rem}
+.item{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px dashed #e8e0d6}
+.item:last-child{border-bottom:0}
+.item-info{flex:1;min-width:0}.item-name{font-weight:600}.item-note{font-size:.76rem;color:var(--muted);margin-top:2px}
+.price{font-weight:800;white-space:nowrap;color:#8d6731}
+.add{
+  width:36px;height:36px;border-radius:50%;border:1px solid #d9ccb9;background:#fff;color:#8d6731;
+  font-size:1.2rem;transition:.2s
+}
+.add:hover{background:var(--dark);color:#fff;transform:scale(1.05)}
+.empty{grid-column:1/-1;text-align:center;padding:55px;color:var(--muted)}
+
+.about{
+  margin:0 0 90px;background:var(--dark);color:#fff;border-radius:32px;padding:70px;
+  display:grid;grid-template-columns:1.3fr .7fr;gap:50px;overflow:hidden;position:relative
+}
+.about:after{content:"✦";position:absolute;right:40px;top:10px;font-size:12rem;color:rgba(255,255,255,.035)}
+.about h2{font-family:"Cormorant Garamond",serif;font-size:clamp(3rem,6vw,5rem);line-height:.9;margin:12px 0 22px}
+.about p{color:#c8c0b5;max-width:620px}.about-card{border-left:1px solid #4b4742;padding-left:30px}
+.about-card strong{display:block;color:#e1bb7d;margin-bottom:6px}.about-card div{margin-bottom:22px;color:#ddd5ca}
+
+footer{background:#0c0b0a;color:#fff;padding:60px 0 30px}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:40px}
+footer h3{font-family:"Cormorant Garamond",serif;font-size:2rem}
+footer p,footer a{color:#a9a29a;font-size:.9rem}
+footer a:hover{color:#fff}.footer-col{display:flex;flex-direction:column;gap:9px}
+.copyright{border-top:1px solid #2b2926;margin-top:40px;padding-top:20px;color:#777;font-size:.78rem}
+
+.cart-btn{
+  position:fixed;right:22px;bottom:22px;z-index:50;border:0;border-radius:999px;
+  background:var(--dark);color:#fff;padding:14px 20px;box-shadow:0 15px 40px rgba(0,0,0,.25);font-weight:800
+}
+.cart-count{background:#d6ad6e;color:#111;border-radius:99px;padding:3px 8px;margin-left:5px}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:80;opacity:0;pointer-events:none;transition:.25s}
+.overlay.show{opacity:1;pointer-events:auto}
+.cart{
+  position:fixed;right:0;top:0;height:100%;width:min(440px,94vw);background:var(--paper);z-index:90;
+  transform:translateX(105%);transition:.3s;display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.18)
+}
+.cart.open{transform:translateX(0)}
+.cart-head{padding:22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.cart-head h2{font-family:"Cormorant Garamond",serif;font-size:2rem}
+.close{border:0;background:#eee8df;border-radius:50%;width:38px;height:38px}
+.cart-items{flex:1;overflow:auto;padding:18px 22px}
+.cart-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.qty{display:flex;align-items:center;gap:9px}.qty button{border:1px solid var(--line);background:#fff;border-radius:50%;width:28px;height:28px}
+.cart-foot{padding:20px 22px;border-top:1px solid var(--line)}
+.total{display:flex;justify-content:space-between;font-size:1.1rem;font-weight:800;margin-bottom:14px}
+.checkout{
+  width:100%;border:0;background:var(--dark);color:#fff;border-radius:14px;padding:15px;font-weight:800
+}
+.note{font-size:.75rem;color:var(--muted);text-align:center;margin-top:9px}
+
+.toast{
+  position:fixed;left:50%;bottom:88px;transform:translate(-50%,20px);z-index:120;background:#261b15;color:#fff;
+  padding:11px 17px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;font-size:.85rem
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:900px){
+  .featured{grid-template-columns:repeat(2,1fr)}
+  .menu-grid{grid-template-columns:1fr}
+  .about{grid-template-columns:1fr;padding:45px 30px}
+  .footer-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+  .hero{min-height:82vh}
+  .hero-content{padding:50px 0}
+  .info-strip{grid-template-columns:1fr;margin-top:-25px;margin-bottom:55px}
+  .info{border-right:0;border-bottom:1px solid var(--line)}
+  .featured{grid-template-columns:1fr 1fr;gap:10px}
+  .feature-card{min-height:190px;padding:16px}.feature-card h3{font-size:1.45rem}
+  .category-block{padding:17px}.item{padding:11px 0}
+  .about{margin-bottom:60px}
+  .footer-grid{grid-template-columns:1fr}
+  .cart-btn{right:14px;bottom:14px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="hero" id="home">
+  <div class="hero-content">
+    <img class="hero-logo" src="sky-lounge-logo.png" >
+    <div class="hero-brand"><span class="hero-brand-line"></span><div class="kicker" style="margin:0">The Sky Lounge Café</div><span class="hero-brand-line"></span></div>
+    <div class="kicker">Rooftop Dining • Habra</div>
+    <h1>The Sky <span>Lounge </span></h1>
+    <p><strong style="letter-spacing:.18em;color:#e6c58e;text-transform:uppercase;font-size:.75rem">Café & Rooftop Dining</strong><br>Good food • Beautiful moments • Great memories. Explore our multi-cuisine menu, refreshing drinks and desserts.</p>
+    <div class="hero-actions">
+      <a class="btn primary" href="#menu">Explore Menu ↓</a>
+      <button class="btn" onclick="openCart()">View My Order 🛒</button>
+    </div>
+  </div>
+</header>
+
+<section class="info-strip">
+  <div class="info"><strong>🍽 Multi-Cuisine</strong><span>Something for everyone</span></div>
+  <div class="info"><strong>🌇 Rooftop Dining</strong><span>Relax with the view</span></div>
+  <div class="info"><strong>🥤 Drinks & Desserts</strong><span>Finish on a sweet note</span></div>
+</section>
+
+<main class="container">
+
+<section>
+  <div class="section-head">
+    <div class="eyebrow">Chef's Picks</div>
+    <h2>Taste Something Wonderful</h2>
+    <p>A few favourites to get your order started.</p>
+  </div>
+  <div class="featured">
+    <article class="feature-card" style="background-image:url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=900&q=80')">
+      <small>Pizza</small><h3>Chicken Pizza</h3><button onclick="addByName('Chicken Pizza')">Add · ₹250</button>
+    </article>
+    <article class="feature-card" style="background-image:url('https://images.unsplash.com/photo-1529059997568-3d847b1154f0?auto=format&fit=crop&w=900&q=80')">
+      <small>Chicken</small><h3>Chicken Lollipop</h3><button onclick="addByName('Chicken Lollipop (4pc)')">Add · ₹160</button>
+    </article>
+    <article class="feature-card" style="background-image:url('https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=900&q=80')">
+      <small>Mocktail</small><h3>Blue Lagoon</h3><button onclick="addByName('Blue Lagoon')">Add · ₹110</button>
+    </article>
+    <article class="feature-card" style="background-image:url('https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=900&q=80')">
+      <small>Shake</small><h3>Oreo Shake</h3><button onclick="addByName('Oreo Shake')">Add · ₹120</button>
+    </article>
+  </div>
+</section>
+
+
+<section class="photo-showcase">
+  <div class="section-head">
+    <div class="eyebrow">The Experience</div>
+    <h2>Welcome to The Sky Lounge Café</h2>
+    <p>Our real space, captured at the café — warm lights, rooftop vibes and a relaxed atmosphere.</p>
+  </div>
+  <div class="photo-grid">
+    <article class="photo-card tall">
+      <img src="cafe-tree-bar.jpg" alt="The Sky Lounge Café rooftop tree bar at night" loading="lazy">
+      <div class="photo-caption">
+        <small>Rooftop Atmosphere</small>
+        <h3>Evenings made to remember.</h3>
+      </div>
+    </article>
+    <article class="photo-card">
+      <img src="cafe-counter.jpg" alt="The Sky Lounge Café counter" loading="lazy">
+      <div class="photo-caption">
+        <small>Inside The Café</small>
+        <h3>Warm lights. Premium vibes.</h3>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="menu-section" id="menu">
+  <div class="section-head">
+    <div class="eyebrow">The Menu</div>
+    <h2>Our Special Menu</h2>
+    <p>Search a dish or choose a category. Tap + to add it to your order.</p>
+  </div>
+
+  <div class="controls">
+    <div class="search">🔍 <input id="search" type="search" placeholder="Search your favourite dish..." oninput="renderMenu()"></div>
+    <div class="categories" id="categories"></div>
+  </div>
+
+  <div class="menu-grid" id="menuGrid"></div>
+</section>
+
+<section class="about">
+  <div>
+    <div class="eyebrow">About The Sky Lounge</div>
+    <h2>Good Food.<br>Good Mood.</h2>
+    <p>Welcome to The Sky Lounge Café, where delicious food, refreshing drinks and a relaxing atmosphere come together. Whether you're enjoying a quick coffee, meeting friends or simply relaxing, we're happy to have you.</p>
+  </div>
+  
+<div class="about-photo">
+  <img src="cafe-counter.jpg" alt="The Sky Lounge Café interior" loading="lazy">
+</div>
+
+  <div class="about-card">
+    <strong>VISIT US</strong>
+    <div>Rooftop JC Honda<br>Desbondhu Park, Habra</div>
+    <strong>EXPERIENCE</strong>
+    <div>Rooftop dining · Multi-cuisine food · Shakes & Mocktails</div>
+    <strong>ONLINE</strong>
+    <div>Also available on Zomato</div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <h3>The Sky Lounge Café</h3>
+      <p><strong style="letter-spacing:.18em;color:#e6c58e;text-transform:uppercase;font-size:.75rem">Café & Rooftop Dining</strong><br>Good food • Beautiful moments • Great memories.</p>
+    </div>
+    <div class="footer-col">
+      <strong>Quick Links</strong>
+      <a href="#home">Home</a><a href="#menu">Menu</a><a href="#menu">Order</a>
+    </div>
+    <div class="footer-col">
+      <strong>Visit</strong>
+      <a href="https://www.google.com/maps/search/?api=1&query=The+Sky+Lounge+Habra" target="_blank">📍 Find Us</a>
+      <a href="tel:+910000000000">📞 Call Us</a>
+      <span>Desbondhu Park, Habra</span>
+    </div>
+  </div>
+  <div class="container copyright">© 2026 The Sky Lounge Café · Digital Menu</div>
+</footer>
+
+<button class="cart-btn" onclick="openCart()">🛒 My Order <span class="cart-count" id="cartCount">0</span></button>
+
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<aside class="cart" id="cart">
+  <div class="cart-head"><h2>Your Order</h2><button class="close" onclick="closeCart()">×</button></div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot">
+    <div class="total"><span>Total Amount</span><span id="total">₹0</span></div>
+    <button class="checkout" onclick="placeOrder()">PLACE ORDER</button>
+    <div class="note">Demo checkout — connect your payment gateway/backend before accepting real online payments.</div>
+  </div>
+</aside>
+
+<div class="toast" id="toast">Added to your order</div>
+
+<script>
+const menu = [
+["Tea","☕",[
+["Milk Tea",25],["Black Tea",20],["Lemon Tea",30],["Green Tea",40],["Blue Tea",40],["Ice Green Tea",50],["Ice Blue Tea",60]
+]],
+["Coffee","☕",[["Hot Coffee",40],["Black Coffee",30],["Ice Black Coffee",40]]],
+["Cold Coffee","🧊",[["Regular Cold Coffee",100],["Cold Coffee Ice Cream",120,"₹120 / ₹130"],["Cold Coffee with KitKat",120],["Cold Coffee with Oreo",120],["Cold Coffee with Mixed Nut",150]]],
+["Chicken","🍗",[["Chicken Pokora (8pc)",140],["Chicken Popcorn",140],["Chicken Lollipop (4pc)",160],["Drums of Heaven (5pc)",220],["Barbecue Chicken (5pc)",180],["Chilli Chicken (Dry/Gravy) (6pc)",160],["Chicken Manchurian (Dry/Gravy) (6pc)",170],["Schezwan Chicken (Dry/Gravy) (6pc)",180],["Garlic Chicken (Gravy) (6pc)",170],["Sweet Garlic Chicken (Dry) (6pc)",180],["Chicken Nuggets (5pc)",160],["Tandoori Chicken Nuggets (5pc)",180],["Green Fried Chicken (5pc)",180],["Chicken Salt & Pepper (6pc)",150],["Cheesy Chicken Ball (6pc)",150],["Chicken Hot Wings (5pc)",200],["Gondhoraj Chicken",160],["Lemon Chicken (6pc)",160]]],
+["Kabab","🍢",[["Chicken Kabab (Hariyali/Reshmi) (5pc)",180,"₹180 / ₹200"],["Paneer Kabab (5pc)",180]]],
+["Fish","🐟",[["Diamond Fish Fry (1p/2p)",110,"₹110 / ₹200"],["Golden Fish Finger (5pc)",200],["Chilli Fish (Dry/Gravy)",180],["Paper Fish",160],["Schezwan Fish (Dry/Gravy)",180],["Korean Fish (5pc)",180],["Cheesy Fish Ball (6pc)",160]]],
+["Salad","🥗",[["Green Salad",60],["Green Mint Salad",80],["Toasted Salad",180],["Chicken Salad",200]]],
+["Burger","🍔",[["Veg Burger",100],["Chicken Burger",140],["Fish Burger",160],["Paneer Burger",150],["Prawns Burger",180]]],
+["Pizza","🍕",[["Veg Pizza",220],["Chicken Pizza",250],["Chicken Sausage Pizza",280],["Paneer Pizza",250],["Prawns Pizza",300],["Corn Pizza",240]]],
+["Pasta","🍝",[["Alfredo Pasta (Veg / Chicken)",180,"₹180 / ₹220"],["Arrabbiata Pasta (Veg / Chicken)",180,"₹180 / ₹220"],["Mamaros Pasta (Veg / Chicken)",200,"₹200 / ₹240"]]],
+["Soup","🍲",[["Mushroom Soup",100],["Sweet Corn Soup",130],["Oil Free Veg Soup",100],["Manchow Soup",120],["Chicken Hot & Sour Soup",120]]],
+["Milk Shake","🥤",[["Pesta Shake",130],["Oreo Shake",120],["KitKat Shake",120],["Strawberry Shake",130],["Chocolate Shake",130],["Mix Nuts Shake",160]]],
+["Sandwich","🥪",[["Veg Sandwich",100],["Chicken Sandwich",140],["Chicken Sandwich with Cheese",160],["Mushroom Sandwich",160],["Extra Cheese",30]]],
+["Noodles","🍜",[["Maggie",50],["Egg Maggie",70],["Chicken Maggie",100],["Hakka Noodles (Veg/Egg/Chi/Mix)",90,"₹90 / ₹110 / ₹140 / ₹170"],["Singapore Noodles (Veg/Egg/Chi/Mix)",100,"₹100 / ₹120 / ₹150 / ₹180"],["Schezwan Noodles (Egg/Chi/Mix)",120,"₹120 / ₹150 / ₹190"],["Basil Noodles (Egg/Chi/Mix)",120,"₹120 / ₹150 / ₹190"]]],
+["Veg Appetizer","🥗",[["French Fries",100],["Peri Peri French Fry",120],["Smiley Potato Fry",120],["Honey Chilli Potato",140],["Crispy Chilli Baby Corn",160],["Crispy Corn",150],["Dry Chilli Mushroom",180],["Mushroom Pakora (8pc)",160],["Veg Cheesy Ball",120],["Paneer Pakora",140],["Paneer Cheesy Ball",150],["Chilli Paneer (Dry/Gravy)",160],["Veg Manchurian",130],["Veg Chilli",130],["Gobi Manchurian",140]]],
+["Momo","🥟",[["Veg Momo (5pc)",70],["Steam Momo (5pc)",90],["Fried Momo (5pc)",110],["Pan Fried Momo (5pc)",130],["Green Pan Fried Momo",140],["Schezwan Momo (5pc)",140],["Cheesy Malai Momo (5pc)",150],["Extra Soup",50],["Kurkure Momo (5pc)",150],["Afghani Momo (5pc)",150]]],
+["Rice","🍚",[["Jira Rice",80],["Fried Rice (Egg/Chi/Mix)",130,"₹130 / ₹160 / ₹180"],["Basil Fried Rice (Egg/Chi/Mix)",140,"₹140 / ₹170 / ₹200"],["Garlic Fried Rice (Egg/Chi/Mix)",140,"₹140 / ₹170 / ₹200"]]],
+["Mocktail","🍹",[["Fresh Lime Soda",80],["Mint Mojito",100],["Strawberry Haven",100],["Pineapple Crush",100],["Blueberry Crush",110],["Kiwi Crush",110],["Green Mint Mojito",120],["Blue Lagoon",110],["Mixed Soda",120]]],
+["Soft Drinks","🥤",[["Mineral Water",10,"₹10 / ₹20"],["Coke",50],["Sprite",50],["Masala Coke",70],["Masala Sprite",70]]],
+["Dessert","🍨",[["Chocolate Ice Cream (2 Scoop)",90],["Vanilla Ice Cream (2 Scoop)",80],["Strawberry Ice Cream (2 Scoop)",100],["Butterscotch Ice Cream (2 Scoop)",100],["Mixed Nut Ice Cream (2 Scoop)",100],["Mixed Ice Cream (2 Scoop)",150]]]
+];
+
+let selected="ALL", cartData=[];
+
+const categories=document.getElementById("categories");
+categories.innerHTML = '<button class="cat active" data-category="ALL">ALL</button>' +
+  menu.map(m => `<button class="cat" data-category="${m[0]}">${m[0]}</button>`).join("");
+
+categories.addEventListener("click", function(e){
+  const btn = e.target.closest(".cat");
+  if(!btn) return;
+
+  // Category selection always overrides the current search.
+  // This keeps every category button working even when text is
+  // still present in the search box.
+  selected = btn.dataset.category;
+
+  document.querySelectorAll(".cat").forEach(x => x.classList.remove("active"));
+  btn.classList.add("active");
+
+  // Clear search when a category is selected so the selected
+  // category shows its complete menu.
+  document.getElementById("search").value = "";
+
+  renderMenu();
+  document.getElementById("menuGrid").scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+});
+
+function selectCategory(btn,cat){
+  selected=cat;
+  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+  renderMenu();
+}
+
+function renderMenu(){
+  const q=document.getElementById("search").value.trim().toLowerCase();
+  const grid=document.getElementById("menuGrid");
+  let html="", found=0;
+
+  menu.forEach(([cat,icon,items])=>{
+    if(selected!=="ALL" && selected!==cat) return;
+    const filtered=items.filter(i=>i[0].toLowerCase().includes(q));
+    if(!filtered.length) return;
+    found+=filtered.length;
+    html+=`<section class="category-block"><div class="category-title"><span class="icon">${icon}</span><h3>${cat}</h3></div>`;
+    filtered.forEach(i=>{
+      const shown=i[2]||("₹"+i[1]);
+      html+=`<div class="item"><div class="item-info"><div class="item-name">${i[0]}</div>${i[2]?`<div class="item-note">${i[2]}</div>`:""}</div><div class="price">${shown}</div><button class="add" aria-label="Add ${i[0]}" onclick="addItem('${escapeQuotes(i[0])}',${i[1]})">+</button></div>`;
+    });
+    html+="</section>";
+  });
+
+  grid.innerHTML=found?html:`<div class="empty"><h3>No dishes found</h3><p>Try another search or category.</p></div>`;
+}
+
+function escapeQuotes(s){return s.replaceAll("\\","\\\\").replaceAll("'","\\'");}
+
+function addByName(name){
+  for(const m of menu) for(const i of m[2]) if(i[0]===name){addItem(i[0],i[1]);return;}
+}
+function addItem(name,price){
+  const existing=cartData.find(x=>x.name===name);
+  if(existing) existing.qty++;
+  else cartData.push({name,price,qty:1});
+  updateCart(); showToast("Added to your order");
+}
+function changeQty(name,delta){
+  const x=cartData.find(i=>i.name===name);
+  if(!x)return;
+  x.qty+=delta;
+  if(x.qty<=0)cartData=cartData.filter(i=>i.name!==name);
+  updateCart();
+}
+function updateCart(){
+  const box=document.getElementById("cartItems");
+  const count=cartData.reduce((a,x)=>a+x.qty,0);
+  const total=cartData.reduce((a,x)=>a+x.qty*x.price,0);
+  document.getElementById("cartCount").textContent=count;
+  document.getElementById("total").textContent="₹"+total;
+
+  box.innerHTML=cartData.length?cartData.map(x=>`
+    <div class="cart-row">
+      <div><strong>${x.name}</strong><div class="price">₹${x.price*x.qty}</div></div>
+      <div class="qty"><button onclick="changeQty('${escapeQuotes(x.name)}',-1)">−</button><strong>${x.qty}</strong><button onclick="changeQty('${escapeQuotes(x.name)}',1)">+</button></div>
+    </div>`).join(""):`<div class="empty"><h3>Your order is empty</h3><p>Add something delicious from the menu.</p></div>`;
+}
+function openCart(){document.getElementById("cart").classList.add("open");document.getElementById("overlay").classList.add("show")}
+function closeCart(){document.getElementById("cart").classList.remove("open");document.getElementById("overlay").classList.remove("show")}
+function showToast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1400)}
+
+function placeOrder(){
+  if(!cartData.length){showToast("Your order is empty");return;}
+  alert("Your order is ready for checkout. Connect Razorpay/Stripe or your preferred payment gateway here before accepting real online payments.");
+}
+
+renderMenu(); updateCart();
+</script>
+</body>
+</html>
