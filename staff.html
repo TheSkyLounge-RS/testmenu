@@ -340,7 +340,6 @@ auth.onAuthStateChanged(function(user) {
 function listenForOrders() {
 
     unsubscribe = db.collection("orders")
-        .where("status", "in", ["new", "preparing", "ready"])
         .orderBy("createdAt", "asc")
         .onSnapshot(function(snapshot) {
 
@@ -450,3 +449,4 @@ function playDing() {
 
 </body>
 </html>
+
