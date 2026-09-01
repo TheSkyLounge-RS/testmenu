@@ -423,7 +423,22 @@ footer a:hover{color:#fff}.footer-col{display:flex;flex-direction:column;gap:9px
 </aside>
 
 <div class="toast" id="toast">Added to your order</div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDDGta_Vtwzrp-IP3bZdNi0pOhLfhv77pA",
+  authDomain: "sky-lounge-order-id.firebaseapp.com",
+  projectId: "sky-lounge-order-id",
+  storageBucket: "sky-lounge-order-id.firebasestorage.app",
+  messagingSenderId: "267992026305",
+  appId: "1:267992026305:web:40c6e36a5c11bc5d71d840"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
 <script>
 const menu = [
 ["Tea","☕",[
@@ -560,9 +575,63 @@ function openCart(){document.getElementById("cart").classList.add("open");docume
 function closeCart(){document.getElementById("cart").classList.remove("open");document.getElementById("overlay").classList.remove("show")}
 function showToast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1400)}
 
-function placeOrder(){
-  if(!cartData.length){showToast("Your order is empty");return;}
-  alert("Your order is ready for checkout. Connect Razorpay/Stripe or your preferred payment gateway here before accepting real online payments.");
+async function placeOrder(){
+  if(!cartData.length){
+    showToast("Your order is empty");
+    return;
+  }
+
+  const customerName = prompt("Enter your name:");
+  if(!customerName) return;
+
+  const tableNumber = prompt("Enter your table number:");
+  if(!tableNumber) return;
+
+  const phone = prompt("Enter your phone number:");
+  if(!phone) return;
+
+  const customerInfo =
+    "Name: " + customerName +
+    " | Table: " + tableNumber +
+    " | Phone: " + phone;
+
+  const orderItems = cartData.map(item => ({
+    name: item.name,
+    price: Number(item.price),
+    quantity: Number(item.qty)
+  }));
+
+  const total = orderItems.reduce(
+    (sum, item) => sum + (item.price * item.quantity),
+    0
+  );
+
+  try {
+    const orderRef = await db.collection("orders").add({
+      customerInfo: customerInfo,
+      items: orderItems,
+      total: total,
+      status: "new",
+      paymentStatus: "pending",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    alert(
+      "Order placed successfully!\\n\\n" +
+      "Order ID: " + orderRef.id
+    );
+
+    cartData = [];
+    updateCart();
+    closeCart();
+
+  } catch(error) {
+    console.error("Order error:", error);
+    alert(
+      "Sorry, your order could not be placed.\\n\\n" +
+      error.message
+    );
+  }
 }
 
 renderMenu(); updateCart();
